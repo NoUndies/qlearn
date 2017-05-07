@@ -33,6 +33,11 @@ function Q = qlearn()
   for n = 1:episodes
     running = true;
     while running == true
+      % if landed on final square, break and go to next episode
+      if S==x*y, 
+        running=false; disp('Restart'); 
+        break; 
+      end
       
       % evaluate Q-matrix
       qvals = action(S);
@@ -50,12 +55,6 @@ function Q = qlearn()
       
       % update Q-matrix
       Q(S,i) = Q(S,i)+alpha*(R(S+A(i))+gamma*max(max(action(S+A(i))))-Q(S,i));
-      
-      % if landed on final square, break and go to next episode
-      if S==x*y, 
-        running=false; disp('Restart'); 
-        break; 
-      end
       
       % update position matrix
       S=S+A(i);
