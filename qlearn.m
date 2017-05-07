@@ -10,7 +10,7 @@ function Q = qlearn()
 
   % reward matrix, utility matrix, and learning variables
   R = zeros(x,y); R(end) = 100; Q = zeros(x*y,size(A,1)); 
-  alpha = 0.2; gamma = 0.2; episodes = 1000;
+  alpha = 0.2; gamma = 0.2; epsilon = 0.2; episodes = 1000;
 
   % position matrix (for viewing)
   POS = zeros(x,y); POS(S) = 1; POS(end)=2;
@@ -19,7 +19,7 @@ function Q = qlearn()
   drawnow;
   
   function  qvals = action(S)
-    % get neighboring elements
+    % get neighboring elements, prevent agent from making illegal moves
     if S>1 & mod(S,y)~=1, up=Q(S,1); else, up=-inf; end
     if S<x*y & mod(S,y)~=0, down=Q(S,2); else, down=-inf; end
     if S-y>=1, left=Q(S,3); else, left=-inf; end
@@ -34,11 +34,21 @@ function Q = qlearn()
     running = true;
     while running == true
       
-      % evaluate and update q matrix
+      % evaluate Q-matrix
       qvals = action(S);
-      m = max(qvals(:));
-      idx = find(qvals==m);
-      i = idx(randi(size(idx,2)));
+      m = max(qvals);
+      k=rand;
+      
+      % epsilon-greedy action selection
+      if k>=epsilon,  
+        idx = find(qvals(:)==m);
+        i = idx(randi(size(idx,1)));
+      else
+        idx = find(qvals(:)~=-inf);
+        i = idx(randi(size(idx,1)));
+      end
+      
+      % update Q-matrix
       Q(S,i) = Q(S,i)+alpha*(R(S+A(i))+gamma*max(max(action(S+A(i))))-Q(S,i));
       
       % if landed on final square, break and go to next episode
@@ -46,6 +56,7 @@ function Q = qlearn()
         running=false; disp('Restart'); 
         break; 
       end
+      
       % update position matrix
       S=S+A(i);
       POS=0*POS; POS(end)=2; POS(S)=1;
