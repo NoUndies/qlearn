@@ -10,12 +10,11 @@ function Q = qlearn()
 
   % reward matrix, utility matrix, and learning variables
   R = zeros(x,y); R(end) = 100; Q = zeros(x*y,size(A,1)); 
-  alpha = 0.2; gamma = 0.2; epsilon = 0.2; episodes = 1000;
+  alpha = 0.2; gamma = 0.2; epsilon = 0; episodes = 1000;
 
   % position matrix (for viewing)
   POS = zeros(x,y); POS(S) = 1; POS(end)=2;
-  [X,Y] = size(POS);
-  imagesc(1:X,1:Y,POS);
+  imagesc(1:x,1:y,POS);
   drawnow;
   
   function  qvals = action(S)
@@ -59,7 +58,7 @@ function Q = qlearn()
       % update position matrix
       S=S+A(i);
       POS=0*POS; POS(end)=2; POS(S)=1;
-      imagesc(1:X,1:Y,POS);
+      imagesc(1:x,1:y,POS);
       drawnow;
     end
   
